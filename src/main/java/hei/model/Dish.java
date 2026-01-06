@@ -15,11 +15,8 @@ public class Dish {
         throw new RuntimeException("Not implemented yet");
     };
 
-    public Dish(Integer id, String name, DishTypeEnum dishType, List<Ingredient> ingredients) {
-        this.id = id;
-        this.name = name;
-        this.dishType = dishType;
-        this.ingredients = ingredients;
+    public Dish(){
+
     }
 
     public Integer getId() {
