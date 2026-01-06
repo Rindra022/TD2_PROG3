@@ -6,11 +6,7 @@ import java.sql.SQLException;
 
 public class DBConnection {
 
-    private DBConnection() {
-
-    }
-
-    public static Connection getDBConnection(){
+    public Connection getDBConnection(){
         try{
             String url =  System.getenv("JDBC_URL");
             String username = System.getenv("USERNAME");
@@ -21,11 +17,10 @@ public class DBConnection {
         }
     }
 
-    public static void closeConnection(Connection dataBaseConnection){
+    public void closeConnection(Connection dataBaseConnection){
         if(dataBaseConnection != null){
             try{
                 dataBaseConnection.close();
-                System.out.println("Connection closed successfully");
             }catch (SQLException e){
                 System.out.println("Error attempt connection closed: "+ e);
                 throw new RuntimeException(e);
