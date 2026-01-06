@@ -18,7 +18,7 @@ public class DataRetriever {
     Dish findDishById(Integer id) {
         Connection dataBaseConnection = dbConnection.getDBConnection();
 
-        Dish dish = null;
+        Dish dish = new Dish();
         try{
             String sqlDish = "select id, name, dish_type from dish where id = ?";
             PreparedStatement psDish = dataBaseConnection.prepareStatement(sqlDish);
@@ -28,7 +28,6 @@ public class DataRetriever {
             if(resultSetDish.next()){
                 DishTypeEnum dishType = DishTypeEnum.valueOf(resultSetDish.getString("dish_type"));
 
-                dish = new Dish();
                 dish.setId(resultSetDish.getInt("id"));
                 dish.setName(resultSetDish.getString("name"));
                 dish.setDishType(dishType);
@@ -45,6 +44,7 @@ public class DataRetriever {
             while (resultSetIngredient.next()){
                 Ingredient ingredient = new Ingredient();
                 CategoryEnum category = CategoryEnum.valueOf(resultSetIngredient.getString("category"));
+
                 ingredient.setId(resultSetIngredient.getInt("id"));
                 ingredient.setName(resultSetIngredient.getString("name"));
                 ingredient.setPrice(resultSetIngredient.getDouble("price"));
@@ -61,5 +61,34 @@ public class DataRetriever {
 
         dbConnection.closeConnection(dataBaseConnection);
         return dish;
+    }
+
+    List<Ingredient> findIngredients(int page, int size){
+        Connection dataBaseConnection = dbConnection.getDBConnection();
+        List<Ingredient> ingredientList = new ArrayList<>();
+        int offset = (page - 1) * size;
+
+        try {
+            String sql = "select id, name, price, price ,category from ingredient order by id limit ? offset ?";
+            PreparedStatement ps = dataBaseConnection.prepareStatement(sql);
+            ps.setInt(1, size);
+            ps.setInt(2, offset);
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                Ingredient ingredient = new Ingredient();
+                ingredient.setId(rs.getInt("id"));
+                ingredient.setName(rs.getString("name"));
+                ingredient.setPrice(rs.getDouble("price"));
+                ingredient.setCategory(CategoryEnum.valueOf(rs.getString("category")));
+                ingredient.setDish(ingredient.getDish());
+                ingredientList.add(ingredient);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        dbConnection.closeConnection(dataBaseConnection);
+        return ingredientList;
     }
 }
