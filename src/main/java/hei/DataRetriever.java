@@ -5,10 +5,7 @@ import hei.model.Ingredient;
 import hei.type.CategoryEnum;
 import hei.type.DishTypeEnum;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -160,15 +157,25 @@ public class DataRetriever {
                 PreparedStatement ps = connection.prepareStatement(insertDish);
                 ps.setInt(1, dish.getId());
                 ps.setString(2, dish.getName());
-                ps.setDouble(3, dish.getPrice());
                 ps.setString(4, dish.getDishType().name());
+                if(dish.getPrice() != null){
+                    ps.setDouble(3, dish.getPrice());
+                }else{
+                    ps.setNull(3, Types.NUMERIC);
+                }
                 ps.executeUpdate();
             } else {
-                String updateDish = "update dish set name=?, dish_type=?::dish_types where id=?";
+                String updateDish = "update dish set name=?, dish_type=?::dish_types, price=? where id=?";
                 PreparedStatement ps = connection.prepareStatement(updateDish);
                 ps.setString(1, dish.getName());
                 ps.setString(2, dish.getDishType().name());
-                ps.setInt(3, dish.getId());
+                ps.setInt(4, dish.getId());
+
+                if(dish.getPrice() != null){
+                    ps.setDouble(3, dish.getPrice());
+                }else{
+                    ps.setNull(3, Types.NUMERIC);
+                }
                 ps.executeUpdate();
 
                 PreparedStatement deleteLinks =
