@@ -13,7 +13,7 @@ public class DBConnection {
             String password = System.getenv("PASSWORD");
             return DriverManager.getConnection(url, username, password);
         }catch (SQLException e){
-            throw new RuntimeException("Error connection from database");
+            throw new RuntimeException("Error connection from database", e);
         }
     }
 
@@ -22,8 +22,7 @@ public class DBConnection {
             try{
                 dataBaseConnection.close();
             }catch (SQLException e){
-                System.out.println("Error attempt connection closed: "+ e);
-                throw new RuntimeException(e);
+                throw new RuntimeException("Error while closing database connection", e);
             }
         }
     }
