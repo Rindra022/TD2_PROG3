@@ -10,13 +10,24 @@ public class Dish {
     private String name;
     private DishTypeEnum dishType;
     private List<Ingredient> ingredients;
+    private Double price;
 
     public Double getDishCost(){
-        throw new RuntimeException("Not implemented yet");
+        return ingredients.stream()
+                .mapToDouble(Ingredient::getPrice)
+                .sum();
     };
 
     public Dish(){
 
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
     public Integer getId() {
