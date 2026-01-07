@@ -20,7 +20,7 @@ public class DataRetriever {
 
         Dish dish = new Dish();
         try{
-            String sqlDish = "select id, name, dish_type from dish where id = ?";
+            String sqlDish = "select id, name, dish_type, price from dish where id = ?";
             PreparedStatement psDish = dataBaseConnection.prepareStatement(sqlDish);
             psDish.setInt(1, id);
             ResultSet resultSetDish = psDish.executeQuery();
@@ -31,6 +31,7 @@ public class DataRetriever {
                 dish.setId(resultSetDish.getInt("id"));
                 dish.setName(resultSetDish.getString("name"));
                 dish.setDishType(dishType);
+                dish.setPrice(resultSetDish.getDouble("price"));
             }else {
                 throw new RuntimeException("Dish not found with id=" + id);
             }
@@ -155,11 +156,12 @@ public class DataRetriever {
             connection.setAutoCommit(false);
 
             if (dish.getId() == null) {
-                String insertDish = "insert into dish (id, name, dish_type) values (?, ?, ?::dish_types)";
+                String insertDish = "insert into dish (id, name, dish_type, price) values (?, ?, ?,?::dish_types)";
                 PreparedStatement ps = connection.prepareStatement(insertDish);
                 ps.setInt(1, dish.getId());
                 ps.setString(2, dish.getName());
-                ps.setString(3, dish.getDishType().name());
+                ps.setDouble(3, dish.getPrice());
+                ps.setString(4, dish.getDishType().name());
                 ps.executeUpdate();
             } else {
                 String updateDish = "update dish set name=?, dish_type=?::dish_types where id=?";
@@ -200,7 +202,7 @@ public class DataRetriever {
 
         try {
             String sql = """
-            select distinct d.id, d.name, d.dish_type
+            select distinct d.id, d.name, d.dish_type, d.price
             from dish d
             join ingredient i on i.id_dish = d.id
             where lower(i.name) like lower(?)
@@ -216,6 +218,7 @@ public class DataRetriever {
                 dish.setId(rs.getInt("id"));
                 dish.setName(rs.getString("name"));
                 dish.setDishType(DishTypeEnum.valueOf(rs.getString("dish_type")));
+                dish.setPrice(rs.getDouble("price"));
                 dishes.add(dish);
             }
 
