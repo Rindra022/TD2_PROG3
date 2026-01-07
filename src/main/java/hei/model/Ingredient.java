@@ -18,12 +18,21 @@ public class Ingredient {
         this.id = id;
         this.name = name;
     }
+    public Ingredient(Integer id, String name, Double price, CategoryEnum category) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.category = category;
+    }
     public Ingredient(Integer id, String name, Double price, CategoryEnum category, Dish dish) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.category = category;
         this.dish = dish;
+    }
+
+    public Ingredient(int i) {
     }
 
     public String getDishName(){
