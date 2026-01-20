@@ -1,45 +1,57 @@
 package hei;
 
-
 import hei.model.Dish;
-import hei.model.Ingredient;
-import hei.type.CategoryEnum;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Connection;
 
 public class Main {
-    public static void main(String[] args){
+
+    public static void main(String[] args) {
+
+        DBConnection dbConnection = new DBConnection();
         DataRetriever dataRetriever = new DataRetriever();
-        System.out.println("//--Find Dish By Id--//");
-        System.out.println(dataRetriever.findDishById(1));
-        System.out.println(dataRetriever.findDishById(99));
-        System.out.println("\n");
+        Connection connection = null;
 
-        System.out.println("//--Find Ingredients--//");
-        System.out.println(dataRetriever.findIngredients(2,2));
-        System.out.println(dataRetriever.findIngredients(3, 5));
-        System.out.println("\n");
+        try {
+            connection = dbConnection.getDBConnection();
+            connection.setAutoCommit(false); // 🔒 début transaction
 
-        System.out.println("//--Create Ingredients--//");
-        List<Ingredient> ingredients= new ArrayList<>();
-        Ingredient ing1 = new Ingredient(6,"Fromage", 1200.0, CategoryEnum.DAIRY);
-        Ingredient ing2 = new Ingredient(7, "Oignon", 500.0, CategoryEnum.VEGETABLE);
-        ingredients.add(ing1);
-        ingredients.add(ing2);
-        List<Ingredient> saved1 = dataRetriever.createIngredients(ingredients);
-        System.out.println("Saved ingredients: " + saved1);
-        System.out.println("\n");
+            System.out.println("=== TEST FIND DISH ===");
 
-        System.out.println("//---------------------------------------");
-        Ingredient ing3 = new Ingredient(8,"Carotte", 2000.0, CategoryEnum.VEGETABLE);
-        Ingredient ing4 = new Ingredient(9, "Laitue", 2000.0, CategoryEnum.VEGETABLE);
-        ingredients.add(ing3);
-        ingredients.add(ing4);
-        List<Ingredient> saved2 = dataRetriever.createIngredients(ingredients);
-        System.out.println("Saved ingredients: " + saved2);
+            Dish dish1 = dataRetriever.findDishById(1);
+            System.out.println(dish1);
+            System.out.println("Gross margin: " + dish1.getGrossMargin());
 
+            Dish dish4 = dataRetriever.findDishById(4);
+            System.out.println(dish4);
+            System.out.println("Gross margin: " + dish4.getGrossMargin());
 
+            System.out.println("\n=== TEST UPDATE (NON DEFINITIF) ===");
+
+            dish1.setPrice(3000.0);
+            dataRetriever.saveDish(dish1);
+
+            Dish updatedDish = dataRetriever.findDishById(1);
+            System.out.println("After update: " + updatedDish);
+
+            System.out.println("\n=== ROLLBACK ===");
+            connection.rollback(); // ❗ annule tout
+
+            Dish rollbackDish = dataRetriever.findDishById(1);
+            System.out.println("After rollback: " + rollbackDish);
+
+        } catch (Exception e) {
+            try {
+                if (connection != null) connection.rollback();
+            } catch (Exception ignored) {}
+            e.printStackTrace();
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.setAutoCommit(true);
+                    dbConnection.closeConnection(connection);
+                }
+            } catch (Exception ignored) {}
+        }
     }
 }
