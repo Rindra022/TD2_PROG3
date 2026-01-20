@@ -44,7 +44,7 @@ public class Main {
             try {
                 if (connection != null) connection.rollback();
             } catch (Exception ignored) {}
-            e.printStackTrace();
+            throw new RuntimeException("Test execution failed", e);
         } finally {
             try {
                 if (connection != null) {
