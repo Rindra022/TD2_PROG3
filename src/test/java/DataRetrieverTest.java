@@ -5,6 +5,8 @@ import hei.type.CategoryEnum;
 import hei.type.DishTypeEnum;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -123,7 +125,7 @@ public class DataRetrieverTest {
         oignon.setDish(dish);
 
         List<Ingredient> saved =
-                dataRetriever.createIngredients(List.of(fromage, oignon));
+                dataRetriever.createIngredients(new ArrayList<>(Arrays.asList(fromage, oignon)));
 
         assertEquals(2, saved.size());
     }
