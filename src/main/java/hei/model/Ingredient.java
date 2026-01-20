@@ -48,6 +48,9 @@ public class Ingredient {
     }
 
     public void setPrice(Double price) {
+        if (price == null || price < 0) {
+            throw new IllegalArgumentException("Ingredient price cannot be negative");
+        }
         this.price = price;
     }
 

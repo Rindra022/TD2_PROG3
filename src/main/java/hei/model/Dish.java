@@ -2,6 +2,7 @@ package hei.model;
 
 import hei.type.DishTypeEnum;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,20 +10,26 @@ public class Dish {
     private Integer id;
     private String name;
     private DishTypeEnum dishType;
-    private List<Ingredient> ingredients;
-    private Double price;
+    private List<DishIngredient> dishIngredients;
+    private Double sellingPrice;
 
     public Double getDishCost(){
-        return ingredients.stream()
-                .mapToDouble(Ingredient::getPrice)
-                .sum();
+        if(dishIngredients == null){
+            return 0.0;
+        }
+
+        double total = 0.0;
+        for (DishIngredient dishInngredient : dishIngredients) {
+            total =+ dishInngredient.getCost();
+        }
+        return total;
     };
 
     public Double getGrossMargin(){
-        if(price == null){
+        if(sellingPrice == null){
             throw new RuntimeException("Price is null");
         }else {
-            return price - getDishCost();
+            return sellingPrice - getDishCost();
         }
     }
 
@@ -30,19 +37,26 @@ public class Dish {
 
     }
 
-    public Dish(Integer id, String name, DishTypeEnum dishType, List<Ingredient> ingredients) {
+    public Dish(String name, DishTypeEnum dishType, List<DishIngredient> dishIngredients) {
+        this.name = name;
+        this.dishType = dishType;
+        this.dishIngredients = dishIngredients;
+    }
+
+    public Dish(Integer id, String name, DishTypeEnum dishType, List<DishIngredient> dishIngredients, Double sellingPrice) {
         this.id = id;
         this.name = name;
         this.dishType = dishType;
-        this.ingredients = ingredients;
+        this.dishIngredients = dishIngredients;
+        this.sellingPrice = sellingPrice;
     }
 
     public Double getPrice() {
-        return price;
+        return sellingPrice;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setSellingPrice(Double price) {
+        this.sellingPrice = price;
     }
 
     public Integer getId() {
@@ -58,6 +72,9 @@ public class Dish {
     }
 
     public void setName(String name) {
+        if(name == null || name.isBlank()){
+            throw new IllegalArgumentException("Dish name can't be null");
+        }
         this.name = name;
     }
 
@@ -69,19 +86,24 @@ public class Dish {
         this.dishType = dishType;
     }
 
-    public List<Ingredient> getIngredients() {
-        return ingredients;
+    public List<DishIngredient> getDishIngredients() {
+        return dishIngredients;
     }
 
-    public void setIngredients(List<Ingredient> ingredients) {
-        if (ingredients == null) {
-            this.ingredients = null;
-            return;
+    public void setDishIngredients(List<DishIngredient> newDishIngredients) {
+        if (this.dishIngredients == null) {
+            this.dishIngredients = new ArrayList<>();
+        } else {
+            this.dishIngredients.clear();
         }
-        for (Ingredient ingredient : ingredients) {
-            ingredient.setDish(this);
+        if (newDishIngredients != null) {
+            for (DishIngredient dishIn : newDishIngredients) {
+                if (dishIn != null) {
+                    dishIn.setDish(this);
+                    this.dishIngredients.add(dishIn);
+                }
+            }
         }
-        this.ingredients = ingredients;
     }
 
 
@@ -89,12 +111,12 @@ public class Dish {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Dish dish = (Dish) o;
-        return Objects.equals(id, dish.id) && Objects.equals(name, dish.name) && dishType == dish.dishType && Objects.equals(ingredients, dish.ingredients);
+        return Objects.equals(id, dish.id) && Objects.equals(name, dish.name) && dishType == dish.dishType && Objects.equals(dishIngredients, dish.dishIngredients) && Objects.equals(sellingPrice, dish.sellingPrice);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, dishType, ingredients);
+        return Objects.hash(id, name, dishType, dishIngredients, sellingPrice);
     }
 
     @Override
@@ -102,9 +124,9 @@ public class Dish {
         return "Dish{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", price='" + price +
                 ", dishType=" + dishType +
-                ", ingredients=" + ingredients +
+                ", dishIngredients=" + dishIngredients +
+                ", sellingPrice=" + sellingPrice +
                 '}';
     }
 }

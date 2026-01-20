@@ -17,7 +17,7 @@ public class DBConnection {
         }
     }
 
-    public void closeConnection(Connection dataBaseConnection){
+    public void attemptCloseDBConnection(Connection dataBaseConnection){
         if(dataBaseConnection != null){
             try{
                 dataBaseConnection.close();
