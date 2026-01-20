@@ -18,8 +18,23 @@ public class Dish {
                 .sum();
     };
 
+    public Double getGrossMargin(){
+        if(price == null){
+            throw new RuntimeException("Price is null");
+        }else {
+            return price - getDishCost();
+        }
+    }
+
     public Dish(){
 
+    }
+
+    public Dish(Integer id, String name, DishTypeEnum dishType, List<Ingredient> ingredients) {
+        this.id = id;
+        this.name = name;
+        this.dishType = dishType;
+        this.ingredients = ingredients;
     }
 
     public Double getPrice() {
@@ -59,6 +74,13 @@ public class Dish {
     }
 
     public void setIngredients(List<Ingredient> ingredients) {
+        if (ingredients == null) {
+            this.ingredients = null;
+            return;
+        }
+        for (Ingredient ingredient : ingredients) {
+            ingredient.setDish(this);
+        }
         this.ingredients = ingredients;
     }
 
@@ -80,6 +102,7 @@ public class Dish {
         return "Dish{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", price='" + price +
                 ", dishType=" + dishType +
                 ", ingredients=" + ingredients +
                 '}';
