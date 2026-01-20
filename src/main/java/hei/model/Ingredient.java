@@ -10,9 +10,15 @@ public class Ingredient {
     private Double price;
     private CategoryEnum category;
     private Dish dish;
+    private Double quantity;
+
+
 
     public Ingredient(){
 
+    }
+    public Ingredient(Integer id){
+        this.id = id;
     }
     public Ingredient(Integer id, String name) {
         this.id = id;
@@ -32,11 +38,16 @@ public class Ingredient {
         this.dish = dish;
     }
 
-    public Ingredient(int i) {
-    }
 
     public String getDishName(){
         return dish == null? null : dish.getName();
+    }
+
+    public Double getQuantity(){
+        return quantity;
+    }
+    public void setQuantity(Double quantity) {
+        this.quantity = quantity;
     }
 
     public Integer getId() {
@@ -97,9 +108,10 @@ public class Ingredient {
         return "Ingredient{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", price=" + price +
                 ", category=" + category +
+                ", price=" + price +
                 ", dishName=" + getDishName() +
+                ", quantity=" + quantity +
                 '}';
     }
 }
