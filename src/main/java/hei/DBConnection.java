@@ -26,4 +26,16 @@ public class DBConnection {
             }
         }
     }
+
+    public void attemptCloseDBConnection(AutoCloseable... resources) {
+        for (AutoCloseable resource : resources) {
+            if (resource != null) {
+                try {
+                    resource.close();
+                } catch (Exception e) {
+                    System.out.println("Error while trying to close the resource" + e);
+                }
+            }
+        }
+    }
 }
