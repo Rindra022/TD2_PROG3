@@ -59,6 +59,10 @@ public class Dish {
         this.sellingPrice = price;
     }
 
+    public Double getSellingPrice() {
+        return sellingPrice;
+    }
+
     public Integer getId() {
         return id;
     }
