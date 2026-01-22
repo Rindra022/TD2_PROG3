@@ -3,6 +3,7 @@ package hei;
 import hei.model.Dish;
 import hei.model.DishIngredient;
 import hei.model.Ingredient;
+import hei.model.StockMovement;
 import hei.type.CategoryEnum;
 import hei.type.DishTypeEnum;
 import hei.type.UnitEnum;
@@ -122,6 +123,80 @@ public class DataRetriever {
                 }
             } catch (SQLException ignored) {}
             dbConnection.attemptCloseDBConnection(rsDish, psDish, con);
+        }
+    }
+
+    public Ingredient saveIngredient(Ingredient toSave) {
+        if (toSave == null) {
+            throw new IllegalArgumentException("Ingredient cannot be null");
+        }
+
+        Connection con = null;
+
+        try {
+            con = dbConnection.getDBConnection();
+            con.setAutoCommit(false);
+
+            PreparedStatement psIngredient = con.prepareStatement("""
+            INSERT INTO ingredient (id, name, price, category)
+            VALUES (?, ?, ?, ?::category_type)
+            ON CONFLICT (id) DO UPDATE
+            SET name = EXCLUDED.name,
+                price = EXCLUDED.price,
+                category = EXCLUDED.category
+            RETURNING id
+        """);
+
+            if (toSave.getId() != null) {
+                psIngredient.setInt(1, toSave.getId());
+            } else {
+                psIngredient.setNull(1, Types.INTEGER);
+            }
+
+            psIngredient.setString(2, toSave.getName());
+            psIngredient.setDouble(3, toSave.getPrice());
+            psIngredient.setString(4, toSave.getCategory().name());
+
+            ResultSet rs = psIngredient.executeQuery();
+            rs.next();
+            int ingredientId = rs.getInt("id");
+
+            if (toSave.getStockMovementList() != null) {
+                PreparedStatement psStock = con.prepareStatement("""
+                INSERT INTO stock_movement (id, id_ingredient, quantity, unit, type, creation_datetime)
+                VALUES (?, ?, ?, ?::unit_type, ?::mouvement_type, ?)
+                ON CONFLICT (id) DO NOTHING
+            """);
+
+                for (StockMovement sm : toSave.getStockMovementList()) {
+                    if (sm.getId() != null) {
+                        psStock.setInt(1, sm.getId());
+                    } else {
+                        psStock.setNull(1, Types.INTEGER);
+                    }
+
+                    psStock.setInt(2, ingredientId);
+                    psStock.setDouble(3, sm.getValue().getQuantity());
+                    psStock.setString(4, sm.getValue().getUnit().name());
+                    psStock.setString(5, sm.getType().name());
+                    psStock.setTimestamp(6, Timestamp.from(sm.getCreationDatetime()));
+
+                    psStock.addBatch();
+                }
+                psStock.executeBatch();
+            }
+
+            con.commit();
+            toSave.setId(ingredientId);
+            return toSave;
+
+        } catch (SQLException e) {
+            try {
+                con.rollback();
+            } catch (SQLException ignored) {}
+            throw new RuntimeException("Failed to save ingredient", e);
+        } finally {
+            dbConnection.attemptCloseDBConnection(con);
         }
     }
 
