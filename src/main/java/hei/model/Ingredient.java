@@ -1,6 +1,7 @@
 package hei.model;
 
 import hei.type.CategoryEnum;
+import hei.type.MovementTypeEnum;
 import hei.type.UnitEnum;
 
 import java.time.Instant;
@@ -37,11 +38,17 @@ public class Ingredient {
         }
 
         double total = 0.0;
-        UnitEnum unit = stockMovementList.get(0).getValue().getUnit();
+        UnitEnum unit = stockMovementList.getFirst().getValue().getUnit();
 
         for (StockMovement sm : stockMovementList) {
             if (!sm.getCreationDatetime().isAfter(t)) {
-                total += sm.getValue().getQuantity();
+                double qty= sm.getValue().getQuantity();
+
+                if(sm.getType() == MovementTypeEnum.IN){
+                    total += qty;
+                } else if (sm.getType() == MovementTypeEnum.OUT){
+                    total -= qty;
+                }
             }
         }
 
