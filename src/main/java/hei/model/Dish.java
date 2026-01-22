@@ -20,7 +20,7 @@ public class Dish {
 
         double total = 0.0;
         for (DishIngredient dishInngredient : dishIngredients) {
-            total =+ dishInngredient.getCost();
+            total += dishInngredient.getCost();
         }
         return total;
     };
