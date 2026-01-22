@@ -1,6 +1,7 @@
 package hei.model;
 
 import hei.type.CategoryEnum;
+import hei.type.UnitEnum;
 
 import java.time.Instant;
 import java.util.List;
@@ -31,7 +32,21 @@ public class Ingredient {
     }
 
     public StockValue getStockValueAT(Instant t){
-        throw new RuntimeException("Not implemented yet");
+        if(stockMovementList == null || stockMovementList.isEmpty()){
+            return new StockValue(0.0, UnitEnum.KG);
+        }
+
+        double total = 0.0;
+        UnitEnum unit = stockMovementList.get(0).getValue().getUnit();
+
+        for (StockMovement sm : stockMovementList) {
+            if (!sm.getCreationDatetime().isAfter(t)) {
+                total += sm.getValue().getQuantity();
+            }
+        }
+
+        return new StockValue(total, unit);
+
     }
 
     public Integer getId() {
@@ -69,6 +84,13 @@ public class Ingredient {
         this.category = category;
     }
 
+    public List<StockMovement> getStockMovementList() {
+        return stockMovementList;
+    }
+
+    public void setStockMovementList(List<StockMovement> stockMovementList) {
+        this.stockMovementList = stockMovementList;
+    }
 
 
     @Override
