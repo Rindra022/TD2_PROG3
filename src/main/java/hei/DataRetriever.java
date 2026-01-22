@@ -219,7 +219,7 @@ public class DataRetriever {
     }
 
 
-    private List<DishIngredient> findDishIngredientsByDishId(Integer dishId) {
+    public List<DishIngredient> findDishIngredientsByDishId(Integer dishId) {
         Connection connection = dbConnection.getDBConnection();
         List<DishIngredient> list = new ArrayList<>();
 
