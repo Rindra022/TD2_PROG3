@@ -2,6 +2,8 @@ package hei.model;
 
 import hei.type.CategoryEnum;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 
 public class Ingredient {
@@ -9,6 +11,7 @@ public class Ingredient {
     private String name;
     private Double price;
     private CategoryEnum category;
+    private List<StockMovement> stockMovementList;
 
     public Ingredient(){}
 
@@ -25,6 +28,10 @@ public class Ingredient {
         this.name = name;
         this.price = price;
         this.category = category;
+    }
+
+    public StockValue getStockValueAT(Instant t){
+        throw new RuntimeException("Not implemented yet");
     }
 
     public Integer getId() {
